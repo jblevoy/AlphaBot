@@ -1,0 +1,26 @@
+import cv2 as cv
+
+shapes = cv.imread('/Users/jasen_levoy/Documents/Projects/PlotBot/PicknPlace/color_shapes.jpg', -1)
+
+print(shapes.shape)
+print(shapes.size)
+print(shapes.dtype)
+
+u,b,g,r = cv.split(shapes)
+cv.imshow('imageb',b)
+cv.imshow('imageg',g)
+cv.imshow('imager',r)
+cv.imshow('imageu',u)
+#shapes = cv.merge((b,g,r))
+
+
+
+
+
+
+
+print(shapes)
+
+cv.imshow('image', shapes)
+cv.waitKey(0)
+cv.destroyAllWindows()

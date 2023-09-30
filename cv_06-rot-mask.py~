@@ -1,0 +1,46 @@
+import cv2 as cv
+import numpy as np
+import imutils
+
+field = cv.imread('/Users/jasen_levoy/Documents/Projects/PlotBot/PicknPlace/alpha_blocks_4a.jpg',1) #30 deg and -15 deg 2 deg white background
+#field = cv.pyrDown(field)
+field_gs = cv.cvtColor(field, cv.COLOR_BGR2GRAY)   #field_gs = gray scale
+th_val, field_bin = cv.threshold(field_gs, 180, 255, cv.THRESH_BINARY)  #field binary threshold
+cv.imshow('field_bin',field_bin)
+temp = cv.imread("alpha_blocks_a-level.jpg", 1)
+#temp = cv.pyrDown(temp)
+temp_gs = cv.cvtColor(temp, cv.COLOR_BGR2GRAY)  
+th_val, temp_inv = cv.threshold(temp_gs, 180, 255, cv.THRESH_BINARY_INV)  #temp_th_inv = template threshold inverse
+i=0
+A=[]
+
+for angle in range(0,360,1):
+    temp_inv_rot = imutils.rotate_bound(temp_inv, angle)
+    w, h = temp_inv_rot.shape[::-1]
+    temp_rot = cv.bitwise_not(temp_inv_rot)      
+    #cv.imwrite("/Users/jasen_levoy/Documents/Projects/PlotBot/PicknPlace/A-Rot/A-Rot_" + str(angle) + ".jpg", temp_rot)
+    res = cv.matchTemplate(field_bin, temp_rot, cv.TM_CCOEFF_NORMED)
+    threshold = 0.95
+    location = np.where(res >= threshold)
+    #print("res max ",res.max())
+    print("location", location)
+    #print("template ", w, " ", h)
+    print("res ",res)
+    #print("angle ",angle)
+    for pt in zip(*location[::-1]):
+        A.append([0,0,0])
+        cv.rectangle(field, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), (2))
+        x = pt[0]
+        y = pt[1]
+        A[i][0] = x
+        A[i][1] = y
+        A[i][2] = angle
+        i+=1
+        
+print('A', A)
+cv.imshow('field',field)
+cv.imshow('temp rot ',temp_rot)
+#cv.imshow('rotated', rotated)
+#print('angle: ',
+cv.waitKey(0)
+cv.destroyAllWindows()

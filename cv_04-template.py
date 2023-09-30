@@ -1,0 +1,20 @@
+import cv2 as cv
+import numpy as np
+
+blocks = cv.imread('/Users/jasen_levoy/Documents/Projects/PlotBot/PicknPlace/alpha_blocks.jpg', -1)
+imGray = cv.cvtColor(blocks, cv.COLOR_BGR2GRAY)
+template = cv.imread("alpha_blocks_a-level.jpg", 0)
+w, h = template.shape[::-1]
+
+res = cv.matchTemplate(imGray, template, cv.TM_CCOEFF_NORMED)
+threshold = 0.99
+location = np.where(res >= threshold)
+print("location", location)
+for pt in zip(*location[::-1]):
+    cv.rectangle(blocks, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), (2))
+
+print(blocks)
+
+cv.imshow('image', blocks)
+cv.waitKey(0)
+cv.destroyAllWindows()
